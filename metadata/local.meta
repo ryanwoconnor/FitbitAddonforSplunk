@@ -1,0 +1,21 @@
+[props/fitbit_devices/FIELDALIAS-device.metadata.access_token%20rename]
+access = read : [ * ], write : [ * ]
+export = system
+owner = nobody
+version = 6.6.0
+modtime = 1499480827.579663000
+
+[passwords/credential%3ARyhome%3ARyhome%3A]
+owner = rwo06001
+version = 6.6.0
+modtime = 1501868607.967265000
+
+[passwords/credential%3Aparents_house%3Aparents_house%3A]
+owner = rwo06001
+version = 6.6.0
+modtime = 1501987021.980328000
+
+[passwords/credential%3ARyan%3ARyan%3A]
+owner = rwo06001
+version = 6.6.3
+modtime = 1517003881.105641000

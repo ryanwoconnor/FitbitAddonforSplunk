@@ -1,0 +1,13 @@
+<dashboard script="index.js"
+           stylesheet="configure.css"
+           hideAppBar="true"
+           isDashboard="false"
+           hideEdit="true">
+  <row>
+    <panel id="fitbitConfig">
+      <html>
+        <div class="container" id="fitbitConfigWrapper"/>
+      </html>
+    </panel>
+  </row>
+</dashboard>
