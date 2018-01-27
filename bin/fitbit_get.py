@@ -14,6 +14,8 @@ import splunk.rest
 import re
 import logging
 import logging.handlers
+import sys
+import splunklib.client as client
 
 class Unbuffered:
     def __init__(self, stream):
@@ -51,48 +53,22 @@ def RefreshToken(refresh_token):
     except Exception as e:
         logger.info(str(e))
 
-def DeleteToken(token_id):
-    delete_path = '/servicesNS/nobody/FitbitAddonforSplunk/storage/passwords/' + token_id + ':'+token_id+':'
-    try:
-        serverResponse, serverContent = splunk.rest.simpleRequest(delete_path, sessionKey=sessionKey, method='DELETE',raiseAllErrors=True)
-        logger.info(str(e))
-    except Exception as e:
-        logger.info(str(e))
+def ListTokens(sessionKey):
+    splunkService = client.connect(token=sessionKey,app='FitbitAddonforSplunk')
+    for storage_password in splunkService.storage_passwords:
+        logger.info(storage_password.name)
 
-def UpdateToken(refreshed_tokens_json, token_id):
-    json_built = {'APIKey':refreshed_tokens_json['APIKey'],'RefreshToken':refreshed_tokens_json['RefreshToken']}
-    creds = {"name": token_id, "password": json_built, "realm": token_id}
-    post_path = '/servicesNS/nobody/FitbitAddonforSplunk/storage/passwords?output_mode=json'
-    try:
-        serverResponse = splunk.rest.simpleRequest(post_path, sessionKey=sessionKey, postargs=creds, method='POST',raiseAllErrors=True)
-        logger.info(serverResponse)
-    except Exception as e:
-        logger.info(str(e))
+def CreateToken(sessionKey, password, user, realm):
+    splunkService = client.connect(token=sessionKey,app='FitbitAddonforSplunk')
+    splunkService.storage_passwords.create(password, user, realm)
 
-# start the real work
-def GetTokens():
-    proc = []
-    keys_dict = {}
-    get_path = '/servicesNS/nobody/FitbitAddonforSplunk/storage/passwords?output_mode=json'
-    try:
-        serverResponse = splunk.rest.simpleRequest(get_path, sessionKey=sessionKey, method='GET', raiseAllErrors=True)
-    except Exception as e:
-        logger.info(str(e))
-    jsonObj = json.loads(serverResponse[1])
-    my_app = "FitbitAddonforSplunk"
-    if len(jsonObj['entry']) == 0:
-        logger.warn("No credentials found.")
-        sleep(60)
-        sys.exit(0)
-    else:
-        for entry in jsonObj['entry']:
-            if entry['acl']['app'] != my_app:
-                continue
-            if 'clear_password' in entry['content'] and 'username' in entry['content']:
-                keys_dict[entry['content']['username']] = entry['content']['clear_password']
-                tokens = entry['content']['clear_password']
-                token_id = entry['content']['username']
-    return keys_dict
+def DeleteToken(sessionKey, user):
+    splunkService = client.connect(token=sessionKey,app='FitbitAddonforSplunk')
+    splunkService.storage_passwords.delete(user)
+
+def GetTokens(sesssionKey):
+    splunkService = client.connect(token=sessionKey,app='FitbitAddonforSplunk')   
+    return splunkService.storage_passwords
 
 
 logger = setup_logger(logging.INFO)
@@ -106,18 +82,10 @@ splunk_home = os.path.expandvars("$SPLUNK_HOME")
 splunk_pid = open(os.path.join(splunk_home, "var", "run", "splunk", "conf-mutator.pid"), 'rb').read()
 sessionKey = sys.stdin.readline().strip()
 
-#Get the Splunk Tokens
-tokens = GetTokens()
-for key,value in tokens.iteritems():
-    value = json.loads(value)
-    logger.info(key+"'s Access Token is: "+value['APIKey'])
-    logger.info(key+"'s Refresh Token is: "+value['RefreshToken'])
-    #Refresh Token
-    #refreshed = RefreshToken(value['RefreshToken'])
-    
-    #Delete Token from REST
-    #DeleteToken(key):
-
-    #Update REST with new Token
-    #UpdateToken(refreshed, key)
+#Connect to Splunk
+try:
+    #Second GET Method
+    splunkService = client.connect(token=sessionKey,app='FitbitAddonforSplunk')
+except Exception as e:
+    logger.info(str(e))
 
