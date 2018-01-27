@@ -117,11 +117,10 @@ for credential in credentials:
         activity_path = 'https://api.fitbit.com/1/user/-/activities/date/'+now.strftime("%Y-%m-%d")+'.json'
         activityreq = urllib2.Request(activity_path)
         activityreq.add_header('Authorization', 'Bearer ' + apikey)
-        logger.info(
         activity_response = urllib2.urlopen(activityreq)
-        codes = json.loads(activity_response.read())
+        codes=json.loads(activity_response.read())
         codes_json=json.dumps(codes)
-        sys.stdout.write(str(activity_response.read())
+        sys.stdout.write(str(codes_json))
         sys.stdout.flush()
     except Exception as e:
         logger.info(str(e))
