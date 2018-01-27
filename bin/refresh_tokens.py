@@ -48,7 +48,7 @@ def RefreshToken(refresh_token, user, sessionKey):
         #Refresh Token 
         req = urllib2.Request('https://5876gyevwj.execute-api.us-west-2.amazonaws.com/prod/refreshFitbitToken?code='+refresh_token)
         response = urllib2.urlopen(req)
-        codes = json.loads(response.read())
+        codes = response.read()
         logger.info("Going to Delete Old Key")
         DeleteToken(sessionKey, user)
         CreateToken(sessionKey, codes, user, user)
@@ -69,9 +69,10 @@ def CreateToken(sessionKey, password, user, realm):
 def DeleteToken(sessionKey, user):
     splunkService = client.connect(token=sessionKey,app='FitbitAddonforSplunk')
     try:
-        splunkService.storage_passwords.delete(user)
+        splunkService.storage_passwords.delete(user,user)
     except Exception as e:
         logger.info(str(e))
+
 def GetTokens(sesssionKey):
     splunkService = client.connect(token=sessionKey,app='FitbitAddonforSplunk')   
     return splunkService.storage_passwords
@@ -97,7 +98,6 @@ try:
 except Exception as e:
     logger.info(str(e))
 
-time.sleep(120)
 credentials = GetTokens(sessionKey)
 for credential in credentials:
     try:
@@ -111,18 +111,8 @@ for credential in credentials:
         #Get the API Key and Refresh Token
         apikey = tokens['APIKey']
         refreshtoken = tokens['RefreshToken']
-        
+        RefreshToken(refreshtoken, username, sessionKey)
 
-        #Make API Call for Daily Activity
-        activity_path = 'https://api.fitbit.com/1/user/-/activities/date/'+now.strftime("%Y-%m-%d")+'.json'
-        activityreq = urllib2.Request(activity_path)
-        activityreq.add_header('Authorization', 'Bearer ' + apikey)
-        logger.info(
-        activity_response = urllib2.urlopen(activityreq)
-        codes = json.loads(activity_response.read())
-        codes_json=json.dumps(codes)
-        sys.stdout.write(str(activity_response.read())
-        sys.stdout.flush()
     except Exception as e:
         logger.info(str(e))
 
