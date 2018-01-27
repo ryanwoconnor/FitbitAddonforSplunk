@@ -17,7 +17,7 @@
 
     <div id="newAPIFormWrapper">
         <h2>Add New API Key</h2>
-        <p>Visit <a target="_blank" href="https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=22CR85&redirect_uri=https%3A%2F%2F5876gyevwj.execute-api.us-west-2.amazonaws.com%2Fprod%2FgetFitbitKey&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight&expires_in=604800">this URL</a> and click accept to allow this app to query your device. <br></br>After authorizing this app, you will be granted an APIKey in a JSON Format like the following: {"api_key":"<strong>c.123456433</strong>"}. The bold section (not including quotes) is what you want to copy and add to the API Key box below.</p>
+        <p>Visit <a target="_blank" href="https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=22CR85&redirect_uri=https%3A%2F%2F5876gyevwj.execute-api.us-west-2.amazonaws.com%2Fprod%2FgetFitbitKey&scope=activity%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight&expires_in=604800">this URL</a> and click accept to allow this app to query your device. <br></br>After authorizing this app, you will be granted an APIKey in a JSON Format like the following: {"APIKey":"<strong>c.123456433</strong>", "RefreshToken": "f4f..."}. You'll want to copy and paste this entire text blob into the JSON section of the Setup screen. You should also provide a unique name for this account in the "Name" field. </p>
 	<form id="fitbitKeyForm" class="form-line">
             <div class="inlineFormComponent">
                 <input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0"
@@ -26,7 +26,7 @@
             </div>
             <div class="inlineFormComponent">
             <input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0"
-                   id="apiKeyValue" name="apiKeyValue" placeholder="API Key">
+                   id="apiKeyValue" name="apiKeyValue" placeholder="JSON">
             </div>
             <button type="submit" id="addKey" class="btn btn-primary">Add Key</button>
         </form>
