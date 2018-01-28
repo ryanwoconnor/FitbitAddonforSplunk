@@ -113,7 +113,7 @@ for credential in credentials:
         
 
         #Make API Call for Daily Activity
-        activity_path = 'https://api.fitbit.com/1/user/-/activities/date/'+now.strftime("%Y-%m-%d")+'.json'
+        activity_path = 'https://api.fitbit.com/1.2/user/-/sleep/date/'+now.strftime("%Y-%m-%d")+'.json'
         activityreq = urllib2.Request(activity_path)
         activityreq.add_header('Authorization', 'Bearer ' + apikey)
         activity_response = urllib2.urlopen(activityreq)
