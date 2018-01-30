@@ -43,20 +43,6 @@ def setup_logger(level):
 
     return logger
 
-def RefreshToken(refresh_token, user, sessionKey):
-    try:
-        #Refresh Token 
-        req = urllib2.Request('https://5876gyevwj.execute-api.us-west-2.amazonaws.com/prod/refreshFitbitToken?code='+refresh_token)
-        response = urllib2.urlopen(req)
-        codes = json.loads(response.read())
-        logger.info("Going to Delete Old Key")
-        DeleteToken(sessionKey, user)
-        CreateToken(sessionKey, codes, user, user)
-        logger.info(str(codes))
-        return codes
-    except Exception as e:
-        logger.info(str(e))
-
 def ListTokens(sessionKey):
     splunkService = client.connect(token=sessionKey,app='FitbitAddonforSplunk')
     for storage_password in splunkService.storage_passwords:
@@ -103,24 +89,20 @@ for credential in credentials:
         #Get Fitbit Name and API Creds from Password Store
         username=credential.content.get('username')
         password=credential.content.get('clear_password')
-        
+
         #Parse JSON API Creds
         tokens = json.loads(password)
-        
-        #Get the API Key and Refresh Token
+ 
+        #Get the API Key
         apikey = tokens['APIKey']
-        refreshtoken = tokens['RefreshToken']
         
-
         #Make API Call for Daily Activity
         activity_path = 'https://api.fitbit.com/1/user/-/activities/date/'+now.strftime("%Y-%m-%d")+'.json'
         activityreq = urllib2.Request(activity_path)
         activityreq.add_header('Authorization', 'Bearer ' + apikey)
         activity_response = urllib2.urlopen(activityreq)
-        codes=json.loads(activity_response.read())
-        codes_json=json.dumps(codes)
-        sys.stdout.write(str(codes_json).replace('{', '{ \"account_name\":\"'+username+'\",', 1))
-        sys.stdout.write('\n')
+        response=activity_response.read()
+        sys.stdout.write(str(response).replace('{', '{ \"account_name\":\"'+username+'\",', 1)+'\n')
         sys.stdout.flush()
     except Exception as e:
         logger.info(str(e))

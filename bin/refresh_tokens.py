@@ -49,10 +49,8 @@ def RefreshToken(refresh_token, user, sessionKey):
         req = urllib2.Request('https://5876gyevwj.execute-api.us-west-2.amazonaws.com/prod/refreshFitbitToken?code='+refresh_token)
         response = urllib2.urlopen(req)
         codes = response.read()
-        logger.info("Going to Delete Old Key")
         DeleteToken(sessionKey, user)
         CreateToken(sessionKey, codes, user, user)
-        logger.info(str(codes))
         return codes
     except Exception as e:
         logger.info(str(e))
